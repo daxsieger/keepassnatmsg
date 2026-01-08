@@ -21,7 +21,7 @@ namespace KeePassNatMsg.Entry
             _ext = KeePassNatMsgExt.ExtInstance;
         }
 
-        public bool UpdateEntry(string uuid, string username, string password, string formHost)
+        public bool UpdateEntry(string uuid, string username, string password, string formHost, string notes = null)
         {
             PwEntry entry = null;
             PwUuid id = new PwUuid(MemUtil.HexStringToByteArray(uuid));
@@ -102,6 +102,11 @@ namespace KeePassNatMsg.Entry
 
                     entry.Strings.Set(PwDefs.UserNameField, new ProtectedString(false, username));
                     entry.Strings.Set(PwDefs.PasswordField, new ProtectedString(true, password));
+                    // Update notes if provided (optional field for backward compatibility)
+                    if (!string.IsNullOrEmpty(notes))
+                    {
+                        entry.Strings.Set(PwDefs.NotesField, new ProtectedString(false, notes));
+                    }
                     entry.Touch(true, false);
                     _ext.UpdateUI(entry.ParentGroup);
 
@@ -123,7 +128,7 @@ namespace KeePassNatMsg.Entry
             }));
         }
 
-        public bool CreateEntry(string username, string password, string url, string submithost, string realm, string groupUuid)
+        public bool CreateEntry(string username, string password, string url, string submithost, string realm, string groupUuid, string notes = null)
         {
             string baseUrl = url;
             // index bigger than https:// <-- this slash
@@ -139,6 +144,11 @@ namespace KeePassNatMsg.Entry
             entry.Strings.Set(PwDefs.UserNameField, new ProtectedString(false, username));
             entry.Strings.Set(PwDefs.PasswordField, new ProtectedString(true, password));
             entry.Strings.Set(PwDefs.UrlField, new ProtectedString(true, baseUrl));
+            // Set notes if provided (optional field for backward compatibility)
+            if (!string.IsNullOrEmpty(notes))
+            {
+                entry.Strings.Set(PwDefs.NotesField, new ProtectedString(false, notes));
+            }
 
             if ((submithost != null && uri.Host != submithost) || realm != null)
             {

@@ -170,16 +170,17 @@ namespace KeePassNatMsg.Protocol
                 var pw = reqMsg.GetString("password");
                 var submitUrl = reqMsg.GetString("submitUrl");
                 var groupUuid = reqMsg.GetString("groupUuid");
+                var notes = reqMsg.GetString("notes"); // Optional field for metadata support
 
                 bool result;
 
                 if (string.IsNullOrEmpty(uuid))
                 {
-                    result = eu.CreateEntry(login, pw, url, submitUrl, null, groupUuid);
+                    result = eu.CreateEntry(login, pw, url, submitUrl, null, groupUuid, notes);
                 }
                 else
                 {
-                    result = eu.UpdateEntry(uuid, login, pw, url);
+                    result = eu.UpdateEntry(uuid, login, pw, url, notes);
                 }
 
                 var resp = req.GetResponse();
